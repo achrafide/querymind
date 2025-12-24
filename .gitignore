@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Docker
+.pgdata/
+
+# IDE
+.vscode/
+*.swp
+.DS_Store
+
+# Data (optional: you can commit sample data, but not logs)
+data/query_log.csv
+models/
