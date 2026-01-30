@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QueryMind AI Co-Pilot</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #2c3e50; text-align: center; }
+        .container { background: #f8f9fa; padding: 20px; border-radius: 8px; }
+        textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #2980b9; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 6px; }
+        .high { background: #ffebee; border-left: 4px solid #f44336; }
+        .medium { background: #fff8e1; border-left: 4px solid #ff9800; }
+        .low { background: #e8f5e8; border-left: 4px solid #4caf50; }
+        .suggestion { margin: 8px 0; padding-left: 20px; }
+        .features { font-size: 0.9em; color: #666; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1>🧠 QueryMind AI Co-Pilot</h1>
+    <div class="container">
+        <p>Enter a PostgreSQL query to get runtime prediction and optimization suggestions:</p>
+        <textarea id="sqlInput" placeholder="SELECT c.c_name FROM customer c, orders o WHERE c.c_custkey = o.o_custkey;">SELECT c.c_name FROM customer c, orders o WHERE c.c_custkey = o.o_custkey;</textarea>
+        <br>
+        <button onclick="predict()">Predict Runtime</button>
+        
+        <div id="result"></div>
+    </div>
+    <button onclick="optimize()">Optimize Query</button>
+
+<script>
+
+async function optimize() {
+    const sql = document.getElementById('sqlInput').value;
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '<p>Optimizing...</p>';
+    
+    try {
+        const response = await fetch('/optimize', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({sql: sql})
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            let html = `
+                <div class="result low">
+                    <h3>🚀 Optimized Query (${data.optimized_runtime_ms} ms)</h3>
+                    <pre>${data.optimized_query}</pre>
+                    <p><strong>Speedup:</strong> ${data.speedup_factor}x faster</p>
+                    <h4>Improvements:</h4>
+                    <ul>
+            `;
+            data.improvements.forEach(item => {
+                html += `<li>${item}</li>`;
+            });
+            html += "</ul>";
+            
+            if (data.suggestions.length > 0) {
+                html += "<h4>💡 Index Suggestions:</h4><ul>";
+                data.suggestions.forEach(s => {
+                    html += `<li>${s}</li>`;
+                });
+                html += "</ul>";
+            }
+            
+            html += "</div>";
+            resultDiv.innerHTML = html;
+        } else {
+            resultDiv.innerHTML = `<p style="color:red">Error: ${data.error}</p>`;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `<p style="color:red">Network error: ${error.message}</p>`;
+    }
+}
+</script>
+    <script>
+async function predict() {
+    const sql = document.getElementById('sqlInput').value;
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '<p>Thinking...</p>';
+    
+    try {
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({sql: sql})
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            let html = `
+                <div class="result ${data.warning_level}">
+                    <h3>${data.warning_text}: ${data.predicted_runtime_ms} ms</h3>
+            `;
+            
+            // Show suggestions if any
+            if (data.suggestions.length > 0) {
+                html += '<h4>💡 Optimization Suggestions:</h4><ul>';
+                data.suggestions.forEach(s => {
+                    html += `<li class="suggestion">${s}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            // Show features
+            html += `
+                <div class="features">
+                    <strong>Query Analysis:</strong><br>
+                    Joins: ${data.features.n_joins} | 
+                    GroupBy: ${data.features.has_groupby ? 'Yes' : 'No'} | 
+                    Filters: ${data.features.n_filter_cols} | 
+                    Est. Rows: ${data.features.plan_rows}
+                </div>
+            </div>
+            `;
+            resultDiv.innerHTML = html;
+        } else {
+            resultDiv.innerHTML = `<p style="color:red">Error: ${data.error}</p>`;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `<p style="color:red">Network error: ${error.message}</p>`;
+    }
+}
+</script>
+</body>
+</html>
