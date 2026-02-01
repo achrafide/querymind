@@ -2,12 +2,21 @@
 services:
   postgres:
     image: postgres:15
+    container_name: querymind-pg
     environment:
       POSTGRES_DB: tpch
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_PASSWORD: querymind123
     ports:
       - "5432:5432"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # ← add this line
+      - pg:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c pg_stat_statements.max=10000
     restart: unless-stopped
+
+volumes:
+  pg: {}

@@ -1,4 +1,4 @@
-#!/mnt/c/dev/ai-native-pg/venv/bin/python3
+#!/mnt/c/dev/querymind/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
