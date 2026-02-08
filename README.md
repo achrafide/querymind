@@ -17,7 +17,7 @@ An AI system that:
 - **Predicts runtime** with 91% accuracy on TPC-H benchmark
 - **Suggests exact fixes**: `CREATE INDEX ON orders(o_custkey);`
 - **Works before execution** — prevent slow queries, don't debug them
-
+![Diagram](/Query_Mind_Diagram.png)
 ## 🚀 Quick Start
 ```bash
 git clone https://github.com/achrafide/querymind
