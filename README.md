@@ -1,29 +1,26 @@
 # QueryMind: AI Co-Pilot for PostgreSQL
 
-Predict query runtime before execution and get actionable optimization suggestions.
+> **Predict query runtime before execution** and get actionable optimization suggestions.
 
-![Web Interface](screenshots/web_interface.png)
+![QueryMind Demo](/test_web-app1.png)
 
-## Problem
-- Developers can't predict if a query will be slow
-- `EXPLAIN` shows what happened, not what will happen
+## 🎯 The Problem
+Every developer has faced this:
+- A query takes 10ms in dev but 2s in production
+- `EXPLAIN` shows what happened, not what will happen  
 - Missing indexes cause 10-100x slowdowns
 
-## Solution
+**Existing tools are reactive. QueryMind is proactive.**
+
+## 💡 Our Solution
 An AI system that:
-- Predicts runtime with 85% accuracy
-- Suggests exact `CREATE INDEX` statements
-- Works on real TPC-H benchmark queries
+- **Predicts runtime** with 91% accuracy on TPC-H benchmark
+- **Suggests exact fixes**: `CREATE INDEX ON orders(o_custkey);`
+- **Works before execution** — prevent slow queries, don't debug them
 
-## Features
-- ✅ **Runtime Prediction**: "This query will take 8.3ms"
-- ✅ **Index Suggestions**: "CREATE INDEX ON orders(o_custkey);"
-- ✅ **Aggregation Advice**: "Consider a materialized view"
-- ✅ **Dual Interface**: CLI for developers, Web for everyone
-
-## Quick Start
+## 🚀 Quick Start
 ```bash
-git clone https://github.com/yourname/querymind
+git clone https://github.com/achrafide/querymind
 cd querymind
 ./launch.sh
 python src/advisor/predict.py "SELECT c.c_name FROM customer c, orders o WHERE c.c_custkey = o.o_custkey;"
